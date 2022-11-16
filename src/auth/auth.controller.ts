@@ -18,8 +18,8 @@ export class AuthController {
 
   @Post('authenticate')
   @UseGuards(JwtAuthGuard)
-  async authenticate() {
-    return { success: true }
+  async authenticate(@Req() req: any) {
+    return req.user;
   }
 
   @Get('profile')
