@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { BookCreateDto } from './dto/book-create.dto';
 
 @Injectable()
 export class BooksService {
@@ -12,15 +11,11 @@ export class BooksService {
 
 
   // FUNCTION UNTUK MEMBUAT DATA BUKU BARU
-  async books(body: BookCreateDto) {
-
-    // DESTRUCTURE BODY OBJECT
-    let {
-      code,
-      title,
-      quantity,
-    } = body; 
-    // DESTRUCTURE BODY OBJECT
+  async create(
+    code: string,
+    title: string,
+    quantity: number,
+  ) {
 
     // PRINT LOG SUCCESS CREATING
     this.logger.log(`Creating book ...`);
@@ -47,5 +42,19 @@ export class BooksService {
     }
   }
 
+  async getAll() {
+    let books = await this.prisma.books.findMany({
+      where: {
+        isDelete: false
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    return {
+      data: books
+    }
+  }
 }
 
