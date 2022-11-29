@@ -84,4 +84,16 @@ export class UsersService {
       data: created
     }
   }
+
+  async getAll() {
+    let users = await this.prisma.user.findMany({
+      where: { 
+        isDelete: false
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+    return { data: users };
+  }
 }
