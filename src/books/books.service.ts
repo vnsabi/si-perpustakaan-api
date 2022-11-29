@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -42,11 +43,17 @@ export class BooksService {
     }
   }
 
-  async getAll() {
+  async getAll(title: string) {
+    let filter: Prisma.BooksWhereInput = {
+      isDelete: false
+    };
+    if(title) {
+      filter.title =  {
+        contains: title
+      };
+    }
     let books = await this.prisma.books.findMany({
-      where: {
-        isDelete: false
-      },
+      where: filter,
       orderBy: {
         createdAt: "desc"
       }
@@ -55,6 +62,34 @@ export class BooksService {
     return {
       data: books
     }
+  }
+
+  async getById(bookId: number) {
+    return await this.prisma.books.findUnique({
+      where: { id: bookId }
+    });
+  }
+
+  async update(
+    bookId: number,
+    title: string,
+    code: string,
+    quantity: number
+  ) {
+    return await this.prisma.books.update({
+      where: { id: bookId },
+      data: {
+        title,
+        code,
+        quantity
+      }
+    });
+  }
+
+  async deleteBook(bookId: number) {
+    return await this.prisma.books.delete({
+      where: { id: bookId }
+    });
   }
 }
 
