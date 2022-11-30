@@ -18,7 +18,6 @@ import { BookGetDto } from './dto/book-get.dto';
 import { BookUpdateDto } from './dto/book-update.dto';
 
 @Controller('books')
-@UseGuards(JwtAuthGuard)
 @UsePipes(new ValidationPipe({ transform: true }))
 export class BooksController {
 
@@ -27,6 +26,7 @@ export class BooksController {
   ) {}
 
   @Post('create')
+  @UseGuards(JwtAuthGuard)
   async create(@Body() body: BookCreateDto) {
     return await this.booksService.create(
       body.code,
@@ -41,12 +41,14 @@ export class BooksController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getById(@Param('id') bookId: string) {
     let book = await this.booksService.getById(parseInt(bookId));
     return book;
   }
 
   @Put('update')
+  @UseGuards(JwtAuthGuard)
   async update(@Body() body: BookUpdateDto) {
     return await this.booksService.update(
       body.bookId,

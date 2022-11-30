@@ -5,6 +5,7 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
+  Get
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserGetDto } from './dto/user-get.dto';
@@ -39,6 +40,12 @@ export class UsersController {
       query.study,
       query.batch
     );
+  }
+
+  @Get('filterDDL')
+  @UseGuards(JwtAuthGuard)
+  async getFilterDDL() {
+    return await this.usersService.getFilterDDL();
   }
 
 }

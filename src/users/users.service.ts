@@ -109,4 +109,42 @@ export class UsersService {
     });
     return { data: users };
   }
+
+  async getFilterDDL() {
+    let classData = await this.prisma.user.groupBy({
+      by: ['class'],
+      where: {
+        isDelete: false,
+        class: {
+          not: null
+        }
+      }
+    });
+    let studyData = await this.prisma.user.groupBy({
+      by: ['study'],
+      where: {
+        isDelete: false,
+        study: {
+          not: null
+        }
+      }
+    });
+    let batchData = await this.prisma.user.groupBy({
+      by: ['batch'],
+      where: {
+        isDelete: false,
+        batch: {
+          not: null
+        }
+      }
+    });
+
+    return {
+      data: {
+        classData,
+        studyData,
+        batchData
+      }
+    }
+  }
 }
