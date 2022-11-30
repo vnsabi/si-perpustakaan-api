@@ -19,4 +19,7 @@ export class UserRegisterDto {
 
     @IsString()
     className: string;
+
+    @IsString()
+    batch: string;
 }

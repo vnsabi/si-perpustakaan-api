@@ -4,6 +4,7 @@ import { UserRegisterDto } from './dto/user-register.dto';
 import * as bcrypt from 'bcrypt';
 import { UserLoginDto } from './dto/user-login.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -60,7 +61,8 @@ export class UsersService {
       password,
       nisId,
       study,
-      className
+      className,
+      batch
     } = body; 
 
     // HASHING PASSWORD
@@ -76,7 +78,8 @@ export class UsersService {
         password: hash,
         nisId,
         study,
-        class: className
+        class: className,
+        batch
       }
     });
     this.logger.log(`Successfully create user`);
@@ -85,11 +88,21 @@ export class UsersService {
     }
   }
 
-  async getAll() {
+  async getAll(
+    name: string,
+    className: string,
+    study: string,
+    batch: string
+  ) {
+    let filter: Prisma.UserWhereInput = {
+      isDelete: false
+    };
+    if(name) filter.name = { contains: name };
+    if(className) filter.class = className;
+    if(study) filter.study = study;
+    if(batch) filter.batch = batch;
     let users = await this.prisma.user.findMany({
-      where: { 
-        isDelete: false
-      },
+      where: filter,
       orderBy: {
         createdAt: "desc"
       }

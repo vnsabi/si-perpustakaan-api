@@ -17,11 +17,12 @@ model User {
   name        String
   password    String
   nisId       String  @unique
-  study       String
-  class       String
+  study       String?
+  class       String?
+  batch       String?
 
   isActive    Boolean   @default(true)
-  isDelete    Boolean   @default(true)
+  isDelete    Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now()) @updatedAt
 

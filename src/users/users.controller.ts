@@ -2,12 +2,12 @@ import {
   Body,
   Controller,
   Post,
-  Get,
   UsePipes,
   ValidationPipe,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UserGetDto } from './dto/user-get.dto';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { UsersService } from './users.service';
@@ -30,10 +30,15 @@ export class UsersController {
     return await this.usersService.register(body);
   }
 
-  @Get()
+  @Post()
   @UseGuards(JwtAuthGuard)
-  async getAll() {
-    return await this.usersService.getAll();
+  async getAll(@Body() query: UserGetDto) {
+    return await this.usersService.getAll(
+      query.name,
+      query.className,
+      query.study,
+      query.batch
+    );
   }
 
 }
