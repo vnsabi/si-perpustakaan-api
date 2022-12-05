@@ -89,10 +89,10 @@ export class UsersService {
   }
 
   async getAll(
-    name: string,
-    className: string,
-    study: string,
-    batch: string
+    name?: string,
+    className?: string,
+    study?: string,
+    batch?: string
   ) {
     let filter: Prisma.UserWhereInput = {
       isDelete: false

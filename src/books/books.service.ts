@@ -43,7 +43,7 @@ export class BooksService {
     }
   }
 
-  async getAll(title: string) {
+  async getAll(title?: string) {
     let filter: Prisma.BooksWhereInput = {
       isDelete: false
     };

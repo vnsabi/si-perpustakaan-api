@@ -26,6 +26,8 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now()) @updatedAt
 
+  borrowings  Borrowings[] 
+
   @@map("users")
 }
 
@@ -38,6 +40,8 @@ model Admin {
   isDelete    Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  borrowings  Borrowings[] 
 
   @@map("admins")
 }
@@ -53,4 +57,19 @@ model Books {
 
   
   @@map("books")
+}
+
+model Borrowings {
+  id            Int     @id @default(autoincrement())
+  booksData     String
+  userId        Int
+  adminId       Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  expiredAt     DateTime  @default(now())
+  status        String    @default("ON_PROGRESS")
+  
+  userModel     User?    @relation(fields: [userId], references: [id])
+  adminModel    Admin?    @relation(fields: [adminId], references: [id])
+  @@map("borrowings")
 }
