@@ -6,11 +6,13 @@ import {
   UsePipes,
   Req,
   UseGuards,
-  Get
+  Get,
+  Query
 } from '@nestjs/common';
 import { BorrowingsService } from './borrowings.service';
 import { BorrowingsCreateDto } from './dto/borrowings-create.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { BorrowingsGetDto } from './dto/borrowings-get.dto';
 
 @Controller('borrowings')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -21,8 +23,10 @@ export class BorrowingsController {
   ) {}
 
   @Get()
-  async getAll() {
-    return await this.borrowingsService.getAll();
+  async getAll(@Query() query: BorrowingsGetDto) {
+    return await this.borrowingsService.getAll(
+      parseInt(query.userId)
+    );
   }
 
   @Post('create')

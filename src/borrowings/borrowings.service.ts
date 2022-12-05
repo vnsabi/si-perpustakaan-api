@@ -20,8 +20,14 @@ export class BorrowingsService implements OnModuleInit {
     // await this.prisma.borrowings.deleteMany();
   }
 
-  async getAll() {
-    let borrowings = await this.prisma.borrowings.findMany({
+  async getAll(userId?: number) {
+    let filter: Prisma.BorrowingsWhereInput = {};
+    if(userId) {
+      filter.userModel = {};
+      filter.userModel.id = userId;
+    }
+      let borrowings = await this.prisma.borrowings.findMany({
+      where: filter,
       orderBy: { createdAt: "desc" },
       include: {
         userModel: true,
