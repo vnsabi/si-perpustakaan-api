@@ -1,9 +1,14 @@
-import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { 
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException
+} from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AdminRegisterDto } from './dto/admin-register.dto';
 import * as bcrypt from 'bcrypt';
-import { Admin } from '@prisma/client';
+import { Admin, Prisma } from '@prisma/client';
 import { AdminLoginDto } from './dto/admin-login.dto';
 
 @Injectable()
@@ -13,6 +18,23 @@ export class AdminService {
     private prisma: PrismaService,
     private authService: AuthService
   ) {}
+
+  async getAll(name?: string) {
+    let filter: Prisma.AdminWhereInput = {
+      isDelete: false
+    };
+    if(name) filter.name = {
+      contains: name,
+    };
+    let admins = await this.prisma.admin.findMany({
+      where: filter,
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    return { data: admins };
+  }
 
   async login(body: AdminLoginDto) {
     let adminData = await this.prisma.admin.findFirst({
