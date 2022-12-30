@@ -74,3 +74,15 @@ model Borrowings {
   adminModel    Admin?    @relation(fields: [adminId], references: [id])
   @@map("borrowings")
 }
+
+model VisitForm {
+  id            Int     @id @default(autoincrement())
+  visitorName   String?
+  className     String?
+  visitReason   String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("visit_form")
+}

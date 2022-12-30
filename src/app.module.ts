@@ -6,9 +6,18 @@ import { BooksModule } from './books/books.module';
 import { AdminModule } from './admin/admin.module';
 import { BorrowingsModule } from './borrowings/borrowings.module';
 import { AlgorithmModule } from './algorithm/algorithm.module';
+import { VisitFormModule } from './visit-form/visit-form.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, BooksModule, AdminModule, BorrowingsModule, AlgorithmModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    BooksModule,
+    AdminModule,
+    BorrowingsModule,
+    AlgorithmModule,
+    VisitFormModule
+  ],
   providers: [
     PrismaService
   ],
