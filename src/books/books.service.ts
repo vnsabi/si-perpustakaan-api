@@ -1,13 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { readFile, readFileSync } from 'fs';
+import { AlgorithmService } from 'src/algorithm/algorithm.service';
 
 @Injectable()
 export class BooksService {
   private readonly logger = new Logger(BooksService.name);
 
   constructor(
-    private prisma: PrismaService
+    private prisma: PrismaService,
+    private algorithmService: AlgorithmService
   ) {}
 
 
@@ -47,21 +50,22 @@ export class BooksService {
     let filter: Prisma.BooksWhereInput = {
       isDelete: false
     };
-    if(title) {
-      filter.title =  {
-        contains: title
-      };
-    }
     let books = await this.prisma.books.findMany({
       where: filter,
       orderBy: {
         createdAt: "desc"
       }
     });
-
-    return {
-      data: books
+    if(title) {
+      let searchedBooks = await this.algorithmService.kmpSearch(
+        title,
+        books,
+        "title"
+      );
+      return { data: searchedBooks }
     }
+
+    return { data: books }
   }
 
   async getById(bookId: number) {
@@ -72,18 +76,43 @@ export class BooksService {
 
   async update(
     bookId: number,
-    title: string,
-    code: string,
-    quantity: number
+    title?: string,
+    code?: string,
+    quantity?: number,
+    filename?: string
   ) {
+    let updateData: Prisma.BooksUpdateInput = {};
+    if(title) updateData.title = title;
+    if(code) updateData.code = code;
+    if(quantity) updateData.quantity = quantity;
+    if(filename) updateData.filename = filename;
     return await this.prisma.books.update({
       where: { id: bookId },
-      data: {
-        title,
-        code,
-        quantity
-      }
+      data: updateData
     });
+  }
+
+  async downloadEbook(bookId: number) {
+    let bookData = await this.prisma.books.findUnique({
+      where: { id: bookId },
+      select: { filename: true }
+    });
+    if(!bookData) return {
+      base64: null
+    };
+    if(!bookData.filename) return {
+      base64: null
+    };
+
+    let filename = bookData.filename;
+
+    let base64 = readFileSync(`./files/books/${filename}`, {
+      encoding: "base64"
+    });
+    return {
+      base64,
+      filename
+    };
   }
 
   async deleteBook(bookId: number) {

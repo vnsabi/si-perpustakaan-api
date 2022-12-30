@@ -51,6 +51,7 @@ model Books {
   code          String 
   title         String    
   quantity      Int       @default(0)
+  filename      String?   
   isDelete      Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

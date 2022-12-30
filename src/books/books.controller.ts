@@ -9,13 +9,21 @@ import {
   Put,
   Param,
   Delete,
-  Query
+  Query,
+  Req,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { BooksService } from './books.service';
 import { BookCreateDto } from './dto/book-create.dto';
 import { BookGetDto } from './dto/book-get.dto';
 import { BookUpdateDto } from './dto/book-update.dto';
+import { Express } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName } from 'src/common/helpers/edit-file-name';
 
 @Controller('books')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -25,6 +33,7 @@ export class BooksController {
     private booksService: BooksService
   ) {}
 
+  
   @Post('create')
   @UseGuards(JwtAuthGuard)
   async create(@Body() body: BookCreateDto) {
@@ -32,6 +41,39 @@ export class BooksController {
       body.code,
       body.title,
       body.quantity
+    );
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: './files/books',
+      filename: editFileName
+    }),
+  }))
+  async uploadEbook(
+    @Req() req: any, 
+    @UploadedFile() file: Express.Multer.File
+  ) { 
+    let bookId = req.body.bookId;
+    let filename = file.filename;
+    return await this.booksService.update(
+      parseInt(bookId),
+      null,
+      null,
+      null,
+      filename
+    );
+  }
+
+  @Get('download')
+  async downloadEbook(@Query('bookId') bookId: string) {
+    if(!bookId) throw new BadRequestException({
+      message: "bookId is missing"
+    });
+
+    return await this.booksService.downloadEbook(
+      parseInt(bookId)
     );
   }
 
