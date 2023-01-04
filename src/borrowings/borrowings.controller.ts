@@ -7,7 +7,8 @@ import {
   Req,
   UseGuards,
   Get,
-  Query
+  Query,
+  Delete
 } from '@nestjs/common';
 import { BorrowingsService } from './borrowings.service';
 import { BorrowingsCreateDto } from './dto/borrowings-create.dto';
@@ -48,6 +49,11 @@ export class BorrowingsController {
   @Get('mappingBooks')
   async mappingBooks() {
     return await this.borrowingsService.mappingBooks();
+  }
+
+  @Delete('delete')
+  async delete(@Body() body: any) {
+    return await this.borrowingsService.delete(body.borrowingId);
   }
   
 }

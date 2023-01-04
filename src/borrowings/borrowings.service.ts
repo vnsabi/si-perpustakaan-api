@@ -108,4 +108,10 @@ export class BorrowingsService implements OnModuleInit {
     return { data: result };
   }
 
+  async delete(borrowingId: number) {
+    return await this.prisma.borrowings.delete({
+      where: { id: borrowingId }
+    });
+  }
+
 }
