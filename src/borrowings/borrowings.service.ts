@@ -63,6 +63,20 @@ export class BorrowingsService implements OnModuleInit {
     expiredDate.setDate(expiredDate.getDate() - 1);
     expiredDate.setUTCHours(23,59,59,999);
 
+    for(let book of booksData) {
+      let bookData = await this.prisma.books.findUnique({
+        where: { id: book.id },
+        select: {
+          quantity: true
+        }
+      });
+      let quantity = bookData.quantity;
+      quantity = quantity - book.quantity;
+      await this.prisma.books.update({
+        where: { id: book.id },
+        data: { quantity }
+      });
+    }
     let payload: Prisma.BorrowingsUncheckedCreateInput = {
       booksData: JSON.stringify(booksData),
       adminId: admin.id,
@@ -93,14 +107,13 @@ export class BorrowingsService implements OnModuleInit {
   }
 
   async mappingBooks() {
-    let books = (await this.booksService.getAll()).data;
+    let books = await this.booksService.getForBorrowing();
     let result = [];
     for(let book of books) {
       result.push({
         label: book.title,
         id: book.id,
         title: book.title,
-        code: book.code,
         quantity: book.quantity
       });
     }

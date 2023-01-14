@@ -48,10 +48,13 @@ model Admin {
 
 model Books {
   id            Int     @id @default(autoincrement())
-  code          String 
   title         String    
   quantity      Int       @default(0)
   filename      String?   
+  publisher     String?
+  author        String?
+  publishYear   String?
+  
   isDelete      Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

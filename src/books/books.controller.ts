@@ -38,9 +38,11 @@ export class BooksController {
   @UseGuards(JwtAuthGuard)
   async create(@Body() body: BookCreateDto) {
     return await this.booksService.create(
-      body.code,
       body.title,
-      body.quantity
+      body.quantity,
+      body.publisher,
+      body.author,
+      body.publishYear
     );
   }
 
@@ -59,7 +61,6 @@ export class BooksController {
     let filename = file.filename;
     return await this.booksService.update(
       parseInt(bookId),
-      null,
       null,
       null,
       filename
@@ -95,7 +96,6 @@ export class BooksController {
     return await this.booksService.update(
       body.bookId,
       body.title,
-      body.code,
       body.quantity
     );
   }

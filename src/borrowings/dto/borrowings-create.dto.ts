@@ -22,9 +22,6 @@ class BorrowingBooks {
   @IsString()
   title: string;
 
-  @IsString()
-  code: string;
-
   @IsInt()
   quantity: number;
 }

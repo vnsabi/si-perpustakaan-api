@@ -16,9 +16,11 @@ export class BooksService {
 
   // FUNCTION UNTUK MEMBUAT DATA BUKU BARU
   async create(
-    code: string,
     title: string,
     quantity: number,
+    publisher: string,
+    author: string,
+    publishYear: string
   ) {
 
     // PRINT LOG SUCCESS CREATING
@@ -29,9 +31,11 @@ export class BooksService {
     // UNTUK MEMBUAT RECORD DI DATABASE. DENGAN PRISMA SEBAGAI ORM/PERANTARA
     let created = await this.prisma.books.create({
       data: {
-        code,
         title,
-        quantity
+        quantity,
+        publisher,
+        author,
+        publishYear
       }
     });
     // UNTUK MEMBUAT RECORD DI DATABASE. DENGAN PRISMA SEBAGAI ORM/PERANTARA
@@ -68,6 +72,22 @@ export class BooksService {
     return { data: books }
   }
 
+  async getForBorrowing() {
+    let filter: Prisma.BooksWhereInput = {
+      isDelete: false,
+      quantity: {
+        gt: 0 
+      }
+    };
+    return await this.prisma.books.findMany({
+      where: filter,
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+  }
+
+  
   async getById(bookId: number) {
     return await this.prisma.books.findUnique({
       where: { id: bookId }
@@ -77,13 +97,11 @@ export class BooksService {
   async update(
     bookId: number,
     title?: string,
-    code?: string,
     quantity?: number,
     filename?: string
   ) {
     let updateData: Prisma.BooksUpdateInput = {};
     if(title) updateData.title = title;
-    if(code) updateData.code = code;
     if(quantity) updateData.quantity = quantity;
     if(filename) updateData.filename = filename;
     return await this.prisma.books.update({
