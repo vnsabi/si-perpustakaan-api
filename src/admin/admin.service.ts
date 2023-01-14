@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   Logger,
+  OnModuleInit,
   UnauthorizedException
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
@@ -12,7 +13,7 @@ import { Admin, Prisma } from '@prisma/client';
 import { AdminLoginDto } from './dto/admin-login.dto';
 
 @Injectable()
-export class AdminService {
+export class AdminService implements OnModuleInit {
   private readonly logger = new Logger(AdminService.name);
   constructor(
     private prisma: PrismaService,
@@ -111,6 +112,42 @@ export class AdminService {
     return {
       data: created
     }
+  }
+
+  async onModuleInit() {
+    const superAdminName = process.env.SUPER_ADMIN_NAME;
+    const superAdminPassword = process.env.SUPER_ADMIN_PASSWORD;
+    await this.registerSuperAdmin(
+      superAdminName,
+      superAdminPassword
+    );
+  }
+
+  async registerSuperAdmin(
+    name: string,
+    password: string
+  ) {
+    // HASHING PASSWORD
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hash = bcrypt.hashSync(password, salt);
+    let checkSuperAdmin = await this.prisma.admin.findFirst({
+      where: {
+        name
+      }
+    });
+    if(checkSuperAdmin) {
+      this.logger.warn(`Super admin already registered with name: ${name}`);
+      return;
+    }
+
+    await this.prisma.admin.create({
+      data: {
+        name,
+        password: hash
+      }
+    });
+    this.logger.warn(`Create super admin successfully`);
   }
 
 }

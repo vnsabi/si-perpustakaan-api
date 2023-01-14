@@ -39,7 +39,6 @@ export class AdminController {
     @Req() req: any,
     @Body() body: AdminRegisterDto,
   ) {
-    console.log(body, "BODI >")
     return await this.adminService.register(
       body,
       req.user
