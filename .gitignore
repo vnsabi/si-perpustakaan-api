@@ -3,7 +3,7 @@
 /node_modules
 /files
 /prisma/migrations
-
+/prisma/test.db
 # Logs
 logs
 *.log
